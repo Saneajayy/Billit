@@ -1,7 +1,7 @@
 import { ClerkExpressRequireAuth } from '@clerk/clerk-sdk-node';
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
-// Clerk requires CLERK_SECRET_KEY in the environment
+// Clerk requires CLERK_SECRET_KEY in the environmentt.
 export const requireAuth = ClerkExpressRequireAuth({
   // options if any
 }) as unknown as RequestHandler;
