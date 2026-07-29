@@ -22,7 +22,7 @@ jobs:
 
     # Backend Setup & Build
     - name: Install Backend Dependencies
-      run: npm ci
+      run: npm install
       working-directory: ./server
 
     - name: Generate Prisma Client
@@ -39,7 +39,7 @@ jobs:
 
     # Frontend Setup & Build
     - name: Install Frontend Dependencies
-      run: npm ci
+      run: npm install
       working-directory: ./client
 
     - name: Type Check Frontend
