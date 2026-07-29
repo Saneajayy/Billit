@@ -1,0 +1,120 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id              String       @id @default(uuid())
+  clerkId         String       @unique
+  businessName    String
+  businessGSTIN   String
+  businessState   String
+  businessAddress String?
+  customers       Customer[]
+  products        Product[]
+  invoices        Invoice[]
+  aiLogs          AIQueryLog[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model Customer {
+  id             String    @id @default(uuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id])
+  name           String
+  gstin          String?
+  email          String?
+  phone          String?
+  billingState   String
+  billingAddress String?
+  invoices       Invoice[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model Product {
+  id        String            @id @default(uuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id])
+  name      String
+  hsnCode   String?
+  unitPrice Float
+  gstRate   Int // e.g. 0, 5, 12, 18, 28
+  unit      String // e.g. pcs, kg, hr
+  lineItems InvoiceLineItem[]
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@index([userId])
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PAID
+  OVERDUE
+}
+
+model Invoice {
+  id            String            @id @default(uuid())
+  userId        String
+  user          User              @relation(fields: [userId], references: [id])
+  customerId    String
+  customer      Customer          @relation(fields: [customerId], references: [id])
+  invoiceNumber String // e.g., INV-2026-0001
+  invoiceDate   DateTime
+  dueDate       DateTime?
+  isInterState  Boolean
+  subtotal      Float
+  totalCGST     Float
+  totalSGST     Float
+  totalIGST     Float
+  grandTotal    Float
+  status        InvoiceStatus     @default(DRAFT)
+  pdfUrl        String?
+  lineItems     InvoiceLineItem[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@unique([userId, invoiceNumber])
+  @@index([userId])
+  @@index([customerId])
+}
+
+model InvoiceLineItem {
+  id           String  @id @default(uuid())
+  invoiceId    String
+  invoice      Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  productId    String
+  product      Product @relation(fields: [productId], references: [id])
+  description  String?
+  quantity     Float
+  unitPrice    Float
+  gstRate      Int
+  taxableValue Float
+  cgstAmount   Float
+  sgstAmount   Float
+  igstAmount   Float
+  lineTotal    Float
+
+  @@index([invoiceId])
+  @@index([productId])
+}
+
+model AIQueryLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  query     String
+  response  String   @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}

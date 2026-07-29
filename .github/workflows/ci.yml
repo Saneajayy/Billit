@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: '**/package-lock.json'
+
+    # Backend Setup & Build
+    - name: Install Backend Dependencies
+      run: npm ci
+      working-directory: ./server
+
+    - name: Generate Prisma Client
+      run: npx prisma generate
+      working-directory: ./server
+
+    - name: Type Check Backend
+      run: npx tsc --noEmit
+      working-directory: ./server
+
+    - name: Lint Backend
+      run: npm run lint --if-present
+      working-directory: ./server
+
+    # Frontend Setup & Build
+    - name: Install Frontend Dependencies
+      run: npm ci
+      working-directory: ./client
+
+    - name: Type Check Frontend
+      run: npx tsc --noEmit
+      working-directory: ./client
+
+    - name: Lint Frontend
+      run: npm run lint --if-present
+      working-directory: ./client
+
+    - name: Build Frontend
+      run: npm run build
+      working-directory: ./client
