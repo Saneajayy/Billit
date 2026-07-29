@@ -124,7 +124,8 @@ export const generateInvoicePDF = async (invoiceData: any): Promise<string> => {
       doc
         .fontSize(10)
         .font('Helvetica')
-        .text('This is a computer-generated invoice.', 50, 700, { align: 'center', color: 'grey' });
+        .fillColor('grey')
+        .text('This is a computer-generated invoice.', 50, 700, { align: 'center' });
 
       doc.end();
 
