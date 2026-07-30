@@ -32,7 +32,7 @@ export default function Invoices() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-white">Invoices</h1>
         <Link
-          to="/invoices/new"
+          to="/dashboard/invoices/new"
           className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors shadow-[0_0_15px_rgba(147,51,234,0.15)] hover:shadow-[0_0_20px_rgba(147,51,234,0.3)]"
         >
           <Plus className="w-4 h-4 mr-2" /> Create Invoice
